@@ -1,0 +1,48 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.homeWrapper{
+  
+  height: 100vh;
+  width: 100vw;
+  /* background-color: #3D434B ; */
+  background-color: #212529 !important;
+}
+.float {
+  position: fixed;
+  width: 60px;
+  height: 60px;
+  bottom: 40px;
+  right: 40px;
+  background-color: #FD413C;
+  color: #fff;
+  border-radius: 50px;
+  text-align: center;
+  /* box-shadow: 2px 2px 3px #999; */
+  outline: none !important;
+  border: 0px;
+}
+
+.my-float {
+  margin-top: 22px;
+}
+.input {
+  padding: 10px 10px;
+  font-size: 18px;
+  width: -webkit-fill-available;
+  outline: #db5a6a;
+}
+.radio {
+  font-size: 18px !important;
+}
+input[type="radio"] {
+  /* border: 0px; */
+  width: 8%;
+  height: 0.9em;
+  background-color: #db5a6a;
+}
+input[type="radio"]:checked:after {
+  background-color: #ffa500;
+}

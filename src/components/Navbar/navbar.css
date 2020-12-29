@@ -1,0 +1,21 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+li a {
+  font-size: 18px;
+  color: white !important;
+  border-right: 1px solid white;
+  padding: 0px 15px !important;
+}
+li  :hover {
+  color: #fd413c !important;
+  cursor: pointer;
+}
+nav {
+  /* background-color: #3D434B !important; */
+
+  background-color: #212529 !important;
+  border-bottom: 1px solid white;
+}

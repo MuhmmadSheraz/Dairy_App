@@ -1,0 +1,10 @@
+.diaryContentWrapper {
+  min-height: 100vh;
+  width: 100vw;
+  /* background-color: #3D434B ; */
+  background-color: #212529 !important;
+}
+.nameWrapper{
+  display: flex;
+  justify-content: space-between;
+}

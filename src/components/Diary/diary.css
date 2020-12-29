@@ -1,0 +1,11 @@
+.DiaryCard {
+  background-color: #3d434b;
+  height: 180px;
+  width: 320px;
+  padding: 10px 0px;
+  border-radius: 15px;
+  padding: 10px;
+}
+.DiaryCard:hover{
+  cursor: pointer;
+}

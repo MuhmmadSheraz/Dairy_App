@@ -1,0 +1,81 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+.appLogo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  width: 100px;
+}
+.cardWrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  
+}
+.AuthWrapper {
+  height: 100vh !important;
+  width: 100%;
+  background-color: #3D434B;
+}
+.imageWrapper {
+  position: absolute;
+  top: -10%;
+  left: 40%;
+  z-index: 1;
+}
+.authcard {
+  color: white;
+  position: relative;
+  border-radius: 5px;
+  height: 490px;
+  width: 400px;
+  background-color: #212529;
+    /* box-shadow: 0 0 10px; */
+}
+.inputBox {
+  display: block;
+  padding: 10px;
+  width: 99%;
+}
+.hoverMe:hover{
+  cursor: pointer;
+}
+.btnLogin{
+  background-color: #FD413C;
+}
+@media (max-width: 430px) {
+  .authcard {
+    height: 450px;
+    width: 350px;
+  }
+}
+@media (max-width: 380px) {
+  .appLogo{
+   height: 80px; 
+   width:  80px; 
+  }
+  .imageWrapper {
+    position: absolute;
+    top: -10%;
+    left: 35%;
+  }
+  .authcard {
+    height: 450px;
+    width: 300px;
+  }
+}
+@media (max-width: 320px) {
+  .authcard {
+    height: 460px;
+    width: 260px;
+  }
+  .inputBox {
+    display: block;
+    padding: 5px;
+    width: 99%;
+  }
+}

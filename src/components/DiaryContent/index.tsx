@@ -2,7 +2,12 @@ import "./diaryContent.css";
 import { useDispatch, useSelector } from "react-redux";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { addEntryReducer } from "../../reducer/entryReducer";
+import {
+  addEntryReducer,
+  upadteEntryReducer,
+} from "../../reducer/entryReducer";
+import { FaPencilAlt } from "react-icons/fa";
+
 import {
   Accordion,
   AccordionItem,
@@ -16,7 +21,7 @@ import "react-accessible-accordion/dist/fancy-example.css";
 import Modal from "reactstrap/lib/Modal";
 import ModalHeader from "reactstrap/lib/ModalHeader";
 import ModalBody from "reactstrap/lib/ModalBody";
-import { Button, ModalFooter } from "reactstrap";
+import { Button, Form, FormGroup, Input, Label, ModalFooter } from "reactstrap";
 import { updateDiaryContent } from "../../reducer/dairyReducer";
 import dayjs from "dayjs";
 const DiaryContent = () => {
@@ -27,8 +32,12 @@ const DiaryContent = () => {
   // Editabel States
   const [modal, setModal] = useState(false);
   const [title, setTitle] = useState<string>("");
+  const [entryName, setEntryName] = useState("");
   const [scope, setScope] = useState<any>("");
-
+  const [entryModal, setEntryModal] = useState(false);
+  const [entryContent, setEntryContent] = useState("");
+  const [currentId, setCurrentId] = useState("");
+  const [state, setState] = useState(true);
   const allDiaries = useSelector((state: any) => {
     return state.dairyReducer.diaries;
   });
@@ -40,11 +49,11 @@ const DiaryContent = () => {
   });
   const { id }: any = useParams();
 
-  const obj = {
-    title: "hello I am entry",
-    content: "hello I am entry COntent",
-    id: id,
-  };
+  // const obj = {
+  //   title: "hello I am entry",
+  //   content: "hello I am entry COntent",
+  //   id: id,
+  // };
   useEffect(() => {
     console.log("Address  Baaar", id);
     console.log("all Diaries===>:", allDiaries);
@@ -68,13 +77,27 @@ const DiaryContent = () => {
   }, [allDiaries, entries]);
 
   const toggle = () => {
-    console.log("User************", user);
     setModal(!modal);
   };
-
+  const toggleEntryModal = (id: any) => {
+    console.log(state, id);
+    if (id == null) {
+      entryModal ? setEntryModal(false) : setEntryModal(true);
+    } else if (state === false) {
+      console.log(currentId);
+      let entryFilterd = entry.filter((x: any) => x.id === id);
+      console.log(entryFilterd);
+      setEntryName(entryFilterd[0].title);
+      setEntryContent(entryFilterd[0].content);
+    }
+    {
+      entryModal ? setEntryModal(false) : setEntryModal(true);
+    }
+    // setEntryName("
+  };
   const updateDiary = () => {
     const now = dayjs().format();
-
+    console.log("Update Func=======");
     let obj = {
       title,
       type: scope,
@@ -85,15 +108,67 @@ const DiaryContent = () => {
     dispatch(updateDiaryContent(obj));
     toggle();
   };
+  const updateEntry = () => {
+    let obj = {
+      title: entryName,
+      content: entryContent,
+      id: currentId,
+    };
+    dispatch(upadteEntryReducer(obj));
+    console.log("Edited  Entry==>", obj);
+    // toggleEntryModal();
+    setEntryModal(false);
+  };
+  const createEntry = async () => {
+    console.log("Entry Created 11");
+    let obj = {
+      title: entryName,
+      content: entryContent,
+      id: id,
+    };
+    console.log("Edited  Entry==>", obj);
+    await dispatch(addEntryReducer(obj));
+    setEntryModal(false);
+  };
+  const openEditor = (id: any) => {
+    console.log("Entry ID", id);
+    if (id === null) {
+      setEntryModal(true);
+      setState(true);
+      setEntryName("");
+      setEntryContent("");
+    } else {
+      setCurrentId(id);
+      console.log("Open Edit Entry");
+      setState(false);
+      toggleEntryModal(id);
+      // setdiaryModal(true);
+    }
+    // console.log(state);
+    // console.log("diaryModalppppppppppppppppppppppppppppppppppp", diaryModal);
+    // toggle();
+    // setdiaryModal(false);
+  };
   return (
     <div className="diaryContentWrapper">
       {diary && diary ? (
         <div className="nameWrapper container">
-          <h1 className="text-white p-5">{diary.title}'s Entries</h1>
+          {isEditable ? (
+            <div className="text-white p-5 d-flex" onClick={updateDiary}>
+              <h1 className="myDIV">{diary.title}'s Entries</h1>{" "}
+              <span className="hide p-1">
+                <FaPencilAlt style={{ color: "white" }} size={20} />
+              </span>
+            </div>
+          ) : (
+            <div className="text-white p-5 d-flex">
+              <h1 className="">{diary.title}'s Entries</h1>{" "}
+            </div>
+          )}
           <span className="p-5">
             <button
               className="btn btn-success"
-              onClick={() => dispatch(addEntryReducer(obj))}
+              onClick={() => openEditor(null)}
             >
               Add Entry
             </button>
@@ -137,30 +212,88 @@ const DiaryContent = () => {
             <label style={{ fontSize: "18px" }}>Private</label>
           </div>
         </ModalBody>
+
         <ModalFooter>
           <Button color="primary" onClick={updateDiary}>
             Update
-          </Button>{" "}
+          </Button>
           <Button color="secondary" onClick={toggle}>
             Cancel
           </Button>
         </ModalFooter>
       </Modal>
-
-      {isEditable ? (
-        <h2 className="text-success" onClick={toggle}>
-          Edit Karo
-        </h2>
-      ) : (
-        ""
-      )}
+      {/* Entry Modal */}
+      <Modal isOpen={entryModal} toggle={() => toggleEntryModal(null)}>
+        <ModalHeader toggle={() => toggleEntryModal(null)}>
+          Update Entry
+        </ModalHeader>
+        <ModalBody>
+          <label className="font-weight-bold">Entry Name</label>
+          <br />
+          <input
+            className="input"
+            placeholder="Enter Dairy Name"
+            value={entryName}
+            onChange={(e) => setEntryName(e.target.value)}
+          />
+          <br />
+          <FormGroup className="py-3">
+            <Label for="exampleText" className="font-weight-bold">
+              Entry Content
+            </Label>
+            <Input
+              onChange={(e) => setEntryContent(e.target.value)}
+              type="textarea"
+              value={entryContent}
+              placeholder="Enter Your Thoughts"
+              name="text"
+              id="exampleText"
+              rows="10"
+              cols="50"
+              style={{ overflow: "auto" }}
+            />
+          </FormGroup>
+        </ModalBody>
+        <ModalFooter>
+          {state ? (
+            <Button color="success" onClick={createEntry}>
+              Add Entry
+            </Button>
+          ) : (
+            <Button color="primary" onClick={updateEntry}>
+              Update
+            </Button>
+          )}
+          <Button color="secondary" onClick={() => toggleEntryModal(null)}>
+            Cancel
+          </Button>
+        </ModalFooter>
+      </Modal>
       <div className="container pb-5">
         <div id="accordion">
           <Accordion allowZeroExpanded>
             {entry.map((item: any) => (
               <AccordionItem key={item.id}>
                 <AccordionItemHeading>
-                  <AccordionItemButton>{item.title}</AccordionItemButton>
+                  <AccordionItemButton>
+                    <span
+                      style={{
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      {item.title}{" "}
+                      {isEditable ? (
+                        <FaPencilAlt
+                          onClick={() => openEditor(item.id)}
+                          className="titleIcon"
+                          style={{ color: "black", float: "right" }}
+                          size={20}
+                        />
+                      ) : (
+                        ""
+                      )}
+                    </span>
+                  </AccordionItemButton>
                 </AccordionItemHeading>
                 <AccordionItemPanel
                   style={{ backgroundColor: "#272B2F", color: "white" }}

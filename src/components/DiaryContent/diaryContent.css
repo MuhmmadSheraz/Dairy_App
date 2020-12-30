@@ -4,7 +4,21 @@
   /* background-color: #3D434B ; */
   background-color: #212529 !important;
 }
-.nameWrapper{
+.nameWrapper {
   display: flex;
   justify-content: space-between;
+}
+
+.hide {
+  display: none;
+}
+.myDIV,
+.hoverMe:hover {
+  cursor: pointer;
+}
+.myDIV:hover + .hide {
+  display: block;
+}
+textarea {
+  overflow: auto !important;
 }

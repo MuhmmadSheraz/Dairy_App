@@ -17,6 +17,15 @@ export const addEntryReducer: any = createAsyncThunk(
     return await response;
   }
 );
+export const upadteEntryReducer: any = createAsyncThunk(
+  "EditEntry",
+  async (obj: any) => {
+    console.log("Thunk Called For Entry", obj);
+    const response = await http.put(`/diaries/entry/${obj.id}/`, obj);
+    console.log("await response.json()===>", await response);
+    return await response;
+  }
+);
 export const entrySlice = createSlice({
   name: "Entry Slice",
   initialState: {
@@ -35,6 +44,21 @@ export const entrySlice = createSlice({
       return console.log("Pending ");
     },
     [addEntryReducer.reject]: (state: any, action: any) => {
+      return console.log("Error Found ");
+    },
+    [upadteEntryReducer.fulfilled]: (state: any, action: any) => {
+      const data: any = action.payload;
+      const { id } = data;
+      const index = state.entries.findIndex((e: any) => e.id === id);
+      if (index !== -1) {
+        state.entries.splice(index, 1, data);
+      }
+      // }
+    },
+    [upadteEntryReducer.pending]: (state: any, action: any) => {
+      return console.log("Pending ");
+    },
+    [upadteEntryReducer.reject]: (state: any, action: any) => {
       return console.log("Error Found ");
     },
   },

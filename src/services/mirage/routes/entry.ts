@@ -1,4 +1,6 @@
 import dayjs from "dayjs";
+import { Entry } from "../../../Interfaces/entry.interface";
+import { handleError } from "../server";
 
 export const addEntry = (schema: any, req: any) => {
   const { id } = req.params;
@@ -28,4 +30,18 @@ export const addEntry = (schema: any, req: any) => {
 export const getEntries = (schema: any, req: any) => {
   const diary = schema.diaries.find(req.params.id);
   return diary.entry;
+};
+export const updateEntry = (schema: any, req: any) => {
+  try {
+    const entry = schema.entries.find(req.params.id);
+    const data = JSON.parse(req.requestBody) as Partial<Entry>;
+    const now = dayjs().format();
+    entry.update({
+      ...data,
+      updatedAt: now,
+    });
+    return entry.attrs as Entry;
+  } catch (error) {
+    return handleError(error, "Failed to update entry.");
+  }
 };

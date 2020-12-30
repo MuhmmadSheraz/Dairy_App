@@ -21,9 +21,9 @@ export const AuthSlice = createSlice({
       }
     },
     removeUser(state) {
-      console.log("remove State ", current(state));
       state.token = null;
       state.isAuthenticated = false;
+      console.log("remove State ", current(state));
     },
   },
 });

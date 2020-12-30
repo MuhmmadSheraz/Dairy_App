@@ -7,8 +7,13 @@
 .nameWrapper {
   display: flex;
   justify-content: space-between;
+  width: 100%;
 }
-
+.simple{
+  width: inherit;
+  display: flex;
+  justify-content: space-between;
+}
 .hide {
   display: none;
 }

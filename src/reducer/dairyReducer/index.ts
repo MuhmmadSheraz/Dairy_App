@@ -32,7 +32,7 @@ export const updateDiaryContent: any = createAsyncThunk(
     console.log("Thunk Called For Update Diary", obj);
     const response = await http.put(`/diaries/${obj.id}`, obj);
     console.log("await response.json()===>", await response);
-    return await response;
+    return response;
   }
 );
 export const DairySlice = createSlice({
@@ -41,9 +41,15 @@ export const DairySlice = createSlice({
   },
   name: "DairySlice",
   reducers: {
-    addDairyq: (state, { payload }): any => {
+    addDairyData: (state, { payload }): any => {
       console.log("Action PayLoad ==>", payload);
-      const data: any[] = payload.diary;
+      const data: any = payload;
+      console.log("data forom Reducer", data);
+      state.diaries = data;
+    },
+    removeDiaries: (state): any => {
+      state.diaries = [];
+      console.log("remove User", state);
     },
   },
   extraReducers: {
@@ -64,11 +70,15 @@ export const DairySlice = createSlice({
       const data: any = action.payload;
       const { id } = data;
       const newObj = Object.assign({}, data);
-      const diaryIndex = state.diaries.find((diary: any) => diary.id === id);
+      console.log("State Diarieeeeeeeeeeees", current(state.diaries));
+      const diaryIndex = current(state.diaries).findIndex((diary: any) => diary.id === id);
+
+      // const diaryIndex = current(state.diaries).find((diary: any) => id === id);
       console.log("find Data===>", diaryIndex);
       if (diaryIndex !== -1) {
         console.log("find Data===>", diaryIndex);
-        state.diaries.splice(diaryIndex, 1, newObj);
+        state.diaries.splice(diaryIndex, 1, data);
+        console.log("List===>", current(state.diaries));
       }
       // state.splice(diaryIndex, 1, data);
 
@@ -84,5 +94,5 @@ export const DairySlice = createSlice({
   },
 });
 
-export const { addDairyq } = DairySlice.actions;
+export const { addDairyData, removeDiaries } = DairySlice.actions;
 export default DairySlice.reducer;

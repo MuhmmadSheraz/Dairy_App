@@ -2,6 +2,8 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  /* overflow-x: hidden; */
+
 }
 li a {
   font-size: 18px;
@@ -18,4 +20,9 @@ nav {
 
   background-color: #212529 !important;
   border-bottom: 1px solid white;
+}
+@media(max-width:991px){
+  li a{
+    border-right: 0px
+  }
 }

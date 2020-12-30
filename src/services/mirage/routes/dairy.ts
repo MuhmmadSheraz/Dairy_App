@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import { Request, Response } from "miragejs";
+import { useSelector } from "react-redux";
 // import Diary from "../../../components/Diary";
 import { Diary } from "../../../Interfaces/diary.interface";
 import { User } from "../../../Interfaces/user.interface";
@@ -24,6 +25,7 @@ export const create = (
       type,
       createdAt: now,
       updatedAt: now,
+      userId,
     });
     console.log("To be dairy ", diary);
     return {
@@ -48,13 +50,14 @@ export const getDiaries = (schema: any, req: Request): Diary[] | Response => {
 };
 export const updateDiary = (schema: any, req: Request): Diary[] | Response => {
   try {
-    const specificDiary = schema.diaries.find(req.params.id);
+    console.log("Without JSON", req.requestBody);
+    const diary = schema.diaries.find(req.params.id);
     const data = JSON.parse(req.requestBody);
     console.log("Update diary Content To be==>", data);
-    specificDiary.update({
+    diary.update({
       ...data,
     });
-    return specificDiary.attrs;
+    return diary.attrs;
   } catch (err) {
     return handleError(err);
   }

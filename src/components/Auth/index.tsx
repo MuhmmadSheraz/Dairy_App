@@ -9,6 +9,7 @@ import { User } from "../../Interfaces/user.interface";
 import { AuthResponse } from "../../services/mirage/routes/user";
 import Loader from "../Loader";
 import { useHistory } from "react-router";
+import Swal from "sweetalert2";
 
 export const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -17,14 +18,18 @@ export const Login = () => {
   const [password, setPassword] = useState<string>("1025454545454");
   const [loader, setLoader] = useState(false);
   const dispatch = useDispatch();
-  const stateData = useSelector((state) => {
-    return state;
-  });
   let history = useHistory();
+  interface userSide {
+    token: string;
+    user: {
+      diaryIds: null;
+      email: string;
+      id: string;
+      password: string;
+      userName: "a";
+    };
+  }
 
-  useEffect(() => {
-    console.log("stateData UseEffect==>", stateData);
-  }, [stateData]);
   let obj = {
     userName,
     email,
@@ -32,9 +37,15 @@ export const Login = () => {
     id: Math.floor(Math.random() * 100),
   };
   const login = () => {
+    if (userName === "" || password === "") {
+      return Swal.fire({
+        icon: "warning",
+        text: "Please Fill All The Fields",
+      });
+    }
     setLoader(true);
     const path = "/auth/login";
-    http.post<User | AuthResponse>(path, obj).then((res: any) => {
+    http.post<User | AuthResponse>(path, obj).then((res: userSide | any) => {
       console.log("res Login==>", res);
       dispatch(
         setUser({
@@ -50,18 +61,25 @@ export const Login = () => {
     });
     setLoader(false);
     // navigate.push("/home");
-    console.log(email, password, userName);
+    // console.log(email, password, userName);
 
-    console.log("stateData==>", stateData);
+    // console.log("stateData==>", stateData);
     setUserName("");
     setEmail("");
     setPassword("");
     // history.push("/home");
   };
+
   const signUp = () => {
+    if (userName === "" || email === "" || password === "") {
+      return Swal.fire({
+        icon: "warning",
+        text: "Please Fill All The Fields",
+      });
+    }
     setLoader(true);
     const path = "/auth/signup";
-    http.post<User | AuthResponse>(path, obj).then((res: any) => {
+    http.post<User | AuthResponse>(path, obj).then((res: userSide | any) => {
       console.log("res SignUp", res);
       dispatch(
         setUser({

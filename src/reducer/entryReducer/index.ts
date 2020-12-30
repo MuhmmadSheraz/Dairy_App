@@ -31,7 +31,16 @@ export const entrySlice = createSlice({
   initialState: {
     entries: [],
   },
-  reducers: {},
+  reducers: {
+    removeEntries: (state: any): any => {
+      state.entries = [];
+      console.log("remove Entries", state);
+    },
+    addAllEntries: (state: any, action: any) => {
+      console.log("ALll Entries ===>", action.payload);
+      state.entries = action.payload;
+    },
+  },
   extraReducers: {
     [addEntryReducer.fulfilled]: (state: any, action: any) => {
       const data: any = action.payload;
@@ -63,4 +72,5 @@ export const entrySlice = createSlice({
     },
   },
 });
+export const { removeEntries,addAllEntries } = entrySlice.actions;
 export default entrySlice.reducer;

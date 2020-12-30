@@ -32,16 +32,19 @@ export default function MainRouter() {
       <Route exact path="/">
         {isLogin ? <Redirect to="/home" /> : <Login />}
       </Route>
-        <Navbar />
       <Route path="/home">
+        <Navbar />
         {!isLogin ? <Redirect to="/" /> : <Home />}
       </Route>
       {/* <Navbar />   */}
       <Route path="/diary/:id/">
-        <DiaryContent />
+        <Navbar />
+        {!isLogin ? <Redirect to="/" /> : <DiaryContent />}
+        {/* <DiaryContent /> */}
       </Route>
       <Route path="/myDiaries/">
-        <MyDiaries />
+        {!isLogin ? <Redirect to="/" /> : <MyDiaries />}
+        {/* <MyDiaries /> */}
       </Route>
     </Router>
   );

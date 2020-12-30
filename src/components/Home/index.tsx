@@ -6,17 +6,25 @@ import http from "../../services/api";
 import Dairies from "../Dairies";
 import { postDiary } from "../../reducer/dairyReducer";
 import { param } from "jquery";
+import Navbar from "../Navbar";
+import Swal from "sweetalert2";
+import { User } from "../../Interfaces/user.interface";
+import { stateType } from "../../types/types";
+export interface AuthResponse {
+  token: string;
+  user: User;
+}
 const Home = () => {
   const [modal, setModal] = useState(false);
   const [title, setTitle] = useState<string>("");
   const [scope, setScope] = useState<any>("");
-  const [user, setUser] = useState<any>("");
-  const authUser: any = useSelector<any>((state) => {
+  const [user, setUser] = useState<AuthResponse | User | any>();
+  const authUser: any = useSelector<AuthResponse | User | any>((state) => {
     return state.userReducer;
   });
   const dispatch = useDispatch();
   useEffect(() => {
-    console.log("Home render===>")
+    console.log("Home render===>");
     setUser(authUser);
   }, [authUser]);
   const toggle = () => {
@@ -24,42 +32,27 @@ const Home = () => {
     setModal(!modal);
   };
   const create = async () => {
+    if (title === "" || scope === "") {
+      return Swal.fire({
+        icon: "warning",
+        text: "Please Fill All The Fields",
+      });
+    }
     // New**************************
+    console.log("scopeeeeeeeeee=>", scope);
     let obj = {
       title: title,
       type: scope,
       userId: user.user.id,
+      diaryId: Math.floor(Math.random() * 100),
     };
     await dispatch(postDiary(obj));
     toggle();
-
-    // http.post("/diaries/", obj).then((e: any) => {
-    //   console.log("Dairy Response", e);
-    //   // dispatch(addDairy(e));
-    //   const { user, diary } = e;
-    //   // dispatch(getDiaries(diary.userId));
-    //   // getDairies(diary.userId);
-    //   return Swal.fire({
-    //     titleText: "All done!",
-    //     confirmButtonText: "OK!",
-    //   });
-    // });
-    // if (diary && user) {
-    //   console.log("Dairy And User", diary, user);
-
-    // }
-  };
-  const getDairies = (a: any) => {
-    console.log("API param", a);
-    http.get(`/diaries/${a}`).then((e) => {
-      console.log(e);
-    });
   };
 
   return (
     <div className="homeWrapper">
       <Dairies />
-      {/* <button onClick={getDairies}>get All </button> */}
       <Modal isOpen={modal} toggle={toggle}>
         <ModalHeader toggle={toggle}>Add Dairy</ModalHeader>
         <ModalBody>

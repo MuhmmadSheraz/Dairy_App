@@ -3,14 +3,19 @@ import "./navbar.css";
 import { removeUser } from "../../reducer/authReducer/index";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { removeDiaries } from "../../reducer/dairyReducer";
+import { removerUserData } from "../../reducer/userReducer";
+import { removeEntries } from "../../reducer/entryReducer";
 const Navbar = () => {
   const dispatch = useDispatch();
   const data = useSelector((state) => {
     return state;
   });
   const logout = () => {
-    console.log("Logging Out", data);
+    console.log("Logging Out Data", data);
     dispatch(removeUser());
+    dispatch(removerUserData());
+    dispatch(removeEntries());
   };
   return (
     <div style={{ width: "100vw" }}>

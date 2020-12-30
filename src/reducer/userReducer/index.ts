@@ -1,15 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { act } from "react-dom/test-utils";
 import { User } from "../../Interfaces/user.interface";
 export const userSlice = createSlice({
   name: "userSlice",
-  initialState: null as User | null,
+  initialState: null,
   reducers: {
     setUser: (state, action) => {
-        console.log("action.payload from Reducer===>",action.payload)
+      console.log("action.payload from Reducer===>", action.payload);
       return (state = action.payload);
+    },
+    removerUserData: (state: any): any => {
+      state.user = null;
+      console.log("remove User", state);
     },
   },
 });
-export const {setUser}= userSlice.actions
-export default userSlice.reducer
+export const { setUser, removerUserData } = userSlice.actions;
+export default userSlice.reducer;

@@ -6,7 +6,7 @@
 .homeWrapper{
   
   height: 100vh;
-  width: 100vw;
+  width: 100vw !important;
   /* background-color: #3D434B ; */
   background-color: #212529 !important;
 }

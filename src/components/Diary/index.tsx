@@ -5,27 +5,17 @@ import { useDispatch } from "react-redux";
 import http from "../../services/api";
 import "./diary.css";
 import { addEntryReducer } from "../../reducer/entryReducer";
-
-const Diary = ({ data, editable }: any) => {
-  const dispatch = useDispatch();
+interface diary {
+  createdAt: string;
+  entryIds: null;
+  id: string;
+  title: string;
+  type: string;
+  updatedAt: string;
+  userId: string;
+}
+const Diary = ({ data, editable }: { data: diary; editable: boolean }) => {
   const history = useHistory();
-  const addEntry = (userId: any) => {
-    const path = `/diaries/entry/${userId}`;
-    http.post(path).then((res): any => {
-      console.log("entry Response==>", res);
-    });
-  };
-  const getEntry = (userId: any) => {
-    const path = `/diaries/entry/${userId}`;
-    http.get(path).then((res): any => {
-      console.log("entry Response==>", res);
-    });
-  };
-  console.log("]]]]]]]]]]]]]]]]]]]]]]]]]]]]", editable);
-  // const go = () => {
-  //   console.log("go")
-  //   <Link to="/diary"/>
-  // };
 
   return (
     <div

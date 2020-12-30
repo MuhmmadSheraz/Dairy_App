@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
+  addAllEntries,
   addEntryReducer,
   upadteEntryReducer,
 } from "../../reducer/entryReducer";
@@ -24,6 +25,12 @@ import ModalBody from "reactstrap/lib/ModalBody";
 import { Button, Form, FormGroup, Input, Label, ModalFooter } from "reactstrap";
 import { updateDiaryContent } from "../../reducer/dairyReducer";
 import dayjs from "dayjs";
+import http from "../../services/api";
+import Swal from "sweetalert2";
+import { DiaryType, EntryType, stateType } from "../../types/types";
+import { Diary } from "../../Interfaces/diary.interface";
+import { User } from "../../Interfaces/user.interface";
+import { Entry } from "../../Interfaces/entry.interface";
 const DiaryContent = () => {
   const dispatch = useDispatch();
   const [isEditable, setIsEditable] = useState<boolean>();
@@ -33,11 +40,11 @@ const DiaryContent = () => {
   const [modal, setModal] = useState(false);
   const [title, setTitle] = useState<string>("");
   const [entryName, setEntryName] = useState("");
-  const [scope, setScope] = useState<any>("");
-  const [entryModal, setEntryModal] = useState(false);
-  const [entryContent, setEntryContent] = useState("");
-  const [currentId, setCurrentId] = useState("");
-  const [state, setState] = useState(true);
+  const [scope, setScope] = useState<string>("");
+  const [entryModal, setEntryModal] = useState<boolean>(false);
+  const [entryContent, setEntryContent] = useState<string>("");
+  const [currentId, setCurrentId] = useState<string>("");
+  const [state, setState] = useState<boolean>(true);
   const allDiaries = useSelector((state: any) => {
     return state.dairyReducer.diaries;
   });
@@ -47,45 +54,62 @@ const DiaryContent = () => {
   const entries = useSelector((state: any) => {
     return state.entryReducer.entries;
   });
-  const { id }: any = useParams();
+  const { id }: { id: string } = useParams();
 
-  // const obj = {
-  //   title: "hello I am entry",
-  //   content: "hello I am entry COntent",
-  //   id: id,
-  // };
+  const getEntry = (id: string) => {
+    const path = `/diaries/entry/${id}`;
+    http.get(path).then(({ entries }: EntryType | any) => {
+      setEntry(entries);
+      dispatch(addAllEntries(entries));
+    });
+  };
   useEffect(() => {
-    console.log("Address  Baaar", id);
-    console.log("all Diaries===>:", allDiaries);
     let targetDiary = allDiaries.filter((x: any) => x.id === id);
-    const myEntries = entries.filter((x: any) => x.diaryId === id);
+
+    console.log("Param Id ===> ", id);
+    console.log("user Id ===> ", user);
+    console.log("Targeteeed Diary ===> ", targetDiary[0]);
+    if (targetDiary[0] && targetDiary[0].userId === user.id) {
+      console.log("Check EDitable Validation===>", targetDiary[0], user.id);
+      setIsEditable(true);
+      console.log("isEditable====================>", isEditable);
+    }
+
+    console.log("all Diaries===>:", allDiaries);
     console.log("diary Target", targetDiary[0]);
     setDiary(targetDiary[0]);
     setTitle(targetDiary[0].title);
     setScope(targetDiary[0].type);
-    console.log("myEntries===>", myEntries);
-    setEntry(myEntries);
+    // setEntry(myEntries);
     console.log("ALl ENTRIES+++", entries);
     console.log("Targettted  diaries+++", allDiaries);
 
-    if (targetDiary[0] && targetDiary[0].userId === user.id) {
-      setIsEditable(true);
-      console.log("isEditable====================>", isEditable);
-    }
     console.log("Diary to be consoled", diary);
     console.log("Entry111111111111111", entry);
+    const myEntries = entries.filter((x: EntryType) => x.diaryId === id);
+    setEntry(myEntries);
   }, [allDiaries, entries]);
+  useEffect(() => {
+    const myEntries = entries.filter((x: EntryType) => x.diaryId === id);
+    if (myEntries.length === 0) {
+      console.log(id);
+      getEntry(id);
+      console.log("===================================", entries);
+    } else {
+      setEntry(myEntries);
+    }
+  }, []);
 
   const toggle = () => {
     setModal(!modal);
   };
-  const toggleEntryModal = (id: any) => {
+  const toggleEntryModal = (id: null) => {
     console.log(state, id);
     if (id == null) {
       entryModal ? setEntryModal(false) : setEntryModal(true);
     } else if (state === false) {
       console.log(currentId);
-      let entryFilterd = entry.filter((x: any) => x.id === id);
+      let entryFilterd = entry.filter((x: Entry) => x.id === id);
       console.log(entryFilterd);
       setEntryName(entryFilterd[0].title);
       setEntryContent(entryFilterd[0].content);
@@ -93,9 +117,14 @@ const DiaryContent = () => {
     {
       entryModal ? setEntryModal(false) : setEntryModal(true);
     }
-    // setEntryName("
   };
   const updateDiary = () => {
+    if (title === "" || scope === "") {
+      return Swal.fire({
+        icon: "warning",
+        text: "Please Fill All The Fields",
+      });
+    }
     const now = dayjs().format();
     console.log("Update Func=======");
     let obj = {
@@ -109,6 +138,12 @@ const DiaryContent = () => {
     toggle();
   };
   const updateEntry = () => {
+    if (title === "" || entryContent === "") {
+      return Swal.fire({
+        icon: "warning",
+        text: "Please Fill All The Fields",
+      });
+    }
     let obj = {
       title: entryName,
       content: entryContent,
@@ -120,6 +155,12 @@ const DiaryContent = () => {
     setEntryModal(false);
   };
   const createEntry = async () => {
+    if (title === "" || entryContent === "") {
+      return Swal.fire({
+        icon: "warning",
+        text: "Please Fill All The Fields",
+      });
+    }
     console.log("Entry Created 11");
     let obj = {
       title: entryName,
@@ -151,28 +192,36 @@ const DiaryContent = () => {
   };
   return (
     <div className="diaryContentWrapper">
+      {/* <Navbar /> */}
+
       {diary && diary ? (
-        <div className="nameWrapper container">
+        <div className="nameWrapper d-flex">
           {isEditable ? (
-            <div className="text-white p-5 d-flex" onClick={updateDiary}>
-              <h1 className="myDIV">{diary.title}'s Entries</h1>{" "}
-              <span className="hide p-1">
-                <FaPencilAlt style={{ color: "white" }} size={20} />
-              </span>
+            <div className="simple">
+              <div
+                className="text-white p-5 d-flex"
+                style={{ justifyContent: "space-around" }}
+                onClick={updateDiary}
+              >
+                <h1 className="myDIV">{diary.title}'s Entries</h1>{" "}
+                <span className="hide p-1">
+                  <FaPencilAlt style={{ color: "white" }} size={20} />
+                </span>
+              </div>
+              <div className=" p-5">
+                <button
+                  className="btn btn-success"
+                  onClick={() => openEditor(null)}
+                >
+                  Add Entry
+                </button>
+              </div>
             </div>
           ) : (
             <div className="text-white p-5 d-flex">
               <h1 className="">{diary.title}'s Entries</h1>{" "}
             </div>
           )}
-          <span className="p-5">
-            <button
-              className="btn btn-success"
-              onClick={() => openEditor(null)}
-            >
-              Add Entry
-            </button>
-          </span>
         </div>
       ) : (
         ""
@@ -225,7 +274,7 @@ const DiaryContent = () => {
       {/* Entry Modal */}
       <Modal isOpen={entryModal} toggle={() => toggleEntryModal(null)}>
         <ModalHeader toggle={() => toggleEntryModal(null)}>
-          Update Entry
+          Create Entry
         </ModalHeader>
         <ModalBody>
           <label className="font-weight-bold">Entry Name</label>
@@ -237,7 +286,7 @@ const DiaryContent = () => {
             onChange={(e) => setEntryName(e.target.value)}
           />
           <br />
-          <FormGroup className="py-3">
+          <FormGroup className="p-5">
             <Label for="exampleText" className="font-weight-bold">
               Entry Content
             </Label>

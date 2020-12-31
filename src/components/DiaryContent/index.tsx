@@ -52,18 +52,30 @@ const DiaryContent = () => {
     return state.userReducer.user;
   });
   const entries = useSelector((state: any) => {
+    console.log("Main All Entries==>",state.entryReducer.entries)
     return state.entryReducer.entries;
   });
   const { id }: { id: string } = useParams();
 
   const getEntry = (id: string) => {
     const path = `/diaries/entry/${id}`;
-    http.get(path).then(({ entries }: EntryType | any) => {
-      setEntry(entries);
-      dispatch(addAllEntries(entries));
-    });
+    http.get(path).then((e: EntryType | any) => {
+      if (e.entries.length === 0) {
+        console.log("if Entry===>", e);
+
+        return false;
+      } else if (e.entries.length !== 0) {
+        console.log("Else Entry===>", e);
+        dispatch(addAllEntries(e.entries));
+      }
+      // setEntry(entries);
+    });   
   };
   useEffect(() => {
+    const myEntries = entries.filter((x: EntryType) => x.id === id);
+    console.log("All  Entries====> StartUp===>", entries);
+    // console.log("My Entries Filterd====> StartUp===>", myEntries);
+    setEntry(myEntries);
     let targetDiary = allDiaries.filter((x: any) => x.id === id);
 
     console.log("Param Id ===> ", id);
@@ -86,18 +98,17 @@ const DiaryContent = () => {
 
     console.log("Diary to be consoled", diary);
     console.log("Entry111111111111111", entry);
-    const myEntries = entries.filter((x: EntryType) => x.diaryId === id);
-    setEntry(myEntries);
   }, [allDiaries, entries]);
   useEffect(() => {
-    const myEntries = entries.filter((x: EntryType) => x.diaryId === id);
-    if (myEntries.length === 0) {
-      console.log(id);
-      getEntry(id);
-      console.log("===================================", entries);
-    } else {
-      setEntry(myEntries);
-    }
+    getEntry(id);
+    // const myEntries = entries.filter((x: EntryType) => x.diaryId === id);
+    // if (myEntries.length === 0) {
+    //   console.log(id);
+    //   getEntry(id);
+    //   console.log("===================================", entries);
+    // } else {
+    //   setEntry(myEntries);
+    // }
   }, []);
 
   const toggle = () => {

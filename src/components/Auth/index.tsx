@@ -60,6 +60,7 @@ export const Login = () => {
       ); //Token
     });
     setLoader(false);
+    // setLoader(true);
     // navigate.push("/home");
     // console.log(email, password, userName);
 
@@ -93,8 +94,8 @@ export const Login = () => {
         })
       ); //Token
     });
-    history.push("/home");
-    setLoader(false);
+    // history.push("/home");
+    // setLoader(false);
   };
   if (loader) {
     return <Loader />;

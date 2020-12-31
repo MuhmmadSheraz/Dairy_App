@@ -2,11 +2,12 @@ import React from "react";
 import "./navbar.css";
 import { removeUser } from "../../reducer/authReducer/index";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { removeDiaries } from "../../reducer/dairyReducer";
 import { removerUserData } from "../../reducer/userReducer";
 import { removeEntries } from "../../reducer/entryReducer";
 const Navbar = () => {
+  const history=useHistory()
   const dispatch = useDispatch();
   const data = useSelector((state) => {
     return state;
@@ -16,6 +17,7 @@ const Navbar = () => {
     dispatch(removeUser());
     dispatch(removerUserData());
     dispatch(removeEntries());
+    history.push("/")
   };
   return (
     <div style={{ width: "100vw" }}>

@@ -5,12 +5,10 @@ export const userSlice = createSlice({
   initialState: null,
   reducers: {
     setUser: (state, action) => {
-      console.log("action.payload from Reducer===>", action.payload);
       return (state = action.payload);
     },
-    removerUserData: (state: any): any => {
+    removerUserData: (state: any) => {
       state.user = null;
-      console.log("remove User", state);
     },
   },
 });

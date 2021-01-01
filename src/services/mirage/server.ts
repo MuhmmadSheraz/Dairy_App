@@ -14,8 +14,6 @@ export const handleError = (error: any, message = "An error ocurred") => {
 
 export const setupServer = (env?: string): Server => {
   return new Server({
-    environment: env ?? "development",
-
     models: {
       entry: Model.extend({
         diary: belongsTo(),

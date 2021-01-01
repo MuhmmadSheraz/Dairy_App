@@ -24,11 +24,9 @@ const Home = () => {
   });
   const dispatch = useDispatch();
   useEffect(() => {
-    console.log("Home render===>");
     setUser(authUser);
   }, [authUser]);
   const toggle = () => {
-    console.log("User************", user);
     setModal(!modal);
   };
   const create = async () => {
@@ -38,8 +36,6 @@ const Home = () => {
         text: "Please Fill All The Fields",
       });
     }
-    // New**************************
-    console.log("scopeeeeeeeeee=>", scope);
     let obj = {
       title: title,
       type: scope,
@@ -47,6 +43,10 @@ const Home = () => {
       diaryId: Math.floor(Math.random() * 100),
     };
     await dispatch(postDiary(obj));
+    Swal.fire({
+      icon: 'success',
+      title: 'Diary Created.',
+    })
     toggle();
   };
 

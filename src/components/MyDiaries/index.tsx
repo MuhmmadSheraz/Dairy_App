@@ -3,6 +3,8 @@ import { useSelector } from "react-redux";
 import { DiaryType, stateType } from "../../types/types";
 import Diary from "../Diary";
 import Navbar from "../Navbar";
+import { FaLock } from "react-icons/fa";
+
 interface diary {
   createdAt: string;
   entryIds: null;
@@ -21,12 +23,17 @@ const MyDiaries = () => {
     return state.userReducer.user;
   });
   useEffect(() => {
-    console.log(user);
-    console.log(data);
     const mine = data.filter((x: DiaryType) => x.userId === user.id);
-    console.log(mine);
     setDiaries(mine);
   }, [data]);
+  if (diaries.every((x: DiaryType) => x.type !== "private")) {
+    return (
+      <div className="diaryContentWrapper ">
+        <Navbar />
+        <h1 className="text-warning text-center">No Private Diaries Added</h1>
+      </div>
+    );
+  }
   return (
     <div className="diaryContentWrapper ">
       <Navbar />
@@ -34,9 +41,9 @@ const MyDiaries = () => {
       <div className="row  no-gutters justify-content-center pt-3">
         {diaries &&
           diaries.map((item: diary, index: string) => {
-            if (item.type === "Public") {
+            if (item.type === "private") {
               return (
-                <div className="col-md-3 p-0 m-1 " key={index}>
+                <div className="col-md-3 p-0 m-1 DiaryBox" key={index}>
                   <Diary data={item} editable={false} />
                 </div>
               );

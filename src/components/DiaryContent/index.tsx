@@ -31,6 +31,7 @@ import { DiaryType, EntryType, stateType } from "../../types/types";
 import { Diary } from "../../Interfaces/diary.interface";
 import { User } from "../../Interfaces/user.interface";
 import { Entry } from "../../Interfaces/entry.interface";
+import Loader from "../Loader";
 const DiaryContent = () => {
   const dispatch = useDispatch();
   const [isEditable, setIsEditable] = useState<boolean>();
@@ -52,7 +53,6 @@ const DiaryContent = () => {
     return state.userReducer.user;
   });
   const entries = useSelector((state: any) => {
-    console.log("Main All Entries==>",state.entryReducer.entries)
     return state.entryReducer.entries;
   });
   const { id }: { id: string } = useParams();
@@ -60,68 +60,41 @@ const DiaryContent = () => {
   const getEntry = (id: string) => {
     const path = `/diaries/entry/${id}`;
     http.get(path).then((e: EntryType | any) => {
-      if (e.entries.length === 0) {
-        console.log("if Entry===>", e);
+      let modifiedEntry = e.entries.map((x: Entry) => {
+        x["diaryId"] = id;
+        return x;
+      });
+      dispatch(addAllEntries(e.entries));
 
-        return false;
-      } else if (e.entries.length !== 0) {
-        console.log("Else Entry===>", e);
-        dispatch(addAllEntries(e.entries));
-      }
       // setEntry(entries);
-    });   
+    });
   };
   useEffect(() => {
-    const myEntries = entries.filter((x: EntryType) => x.id === id);
-    console.log("All  Entries====> StartUp===>", entries);
-    // console.log("My Entries Filterd====> StartUp===>", myEntries);
-    setEntry(myEntries);
+    getEntry(id);
+  }, []);
+  useEffect(() => {
     let targetDiary = allDiaries.filter((x: any) => x.id === id);
 
-    console.log("Param Id ===> ", id);
-    console.log("user Id ===> ", user);
-    console.log("Targeteeed Diary ===> ", targetDiary[0]);
     if (targetDiary[0] && targetDiary[0].userId === user.id) {
-      console.log("Check EDitable Validation===>", targetDiary[0], user.id);
       setIsEditable(true);
-      console.log("isEditable====================>", isEditable);
     }
 
-    console.log("all Diaries===>:", allDiaries);
-    console.log("diary Target", targetDiary[0]);
     setDiary(targetDiary[0]);
     setTitle(targetDiary[0].title);
     setScope(targetDiary[0].type);
-    // setEntry(myEntries);
-    console.log("ALl ENTRIES+++", entries);
-    console.log("Targettted  diaries+++", allDiaries);
 
-    console.log("Diary to be consoled", diary);
-    console.log("Entry111111111111111", entry);
+    const myEntries = entries.filter((x: EntryType) => x.diaryId === id);
+    setEntry(myEntries);
   }, [allDiaries, entries]);
-  useEffect(() => {
-    getEntry(id);
-    // const myEntries = entries.filter((x: EntryType) => x.diaryId === id);
-    // if (myEntries.length === 0) {
-    //   console.log(id);
-    //   getEntry(id);
-    //   console.log("===================================", entries);
-    // } else {
-    //   setEntry(myEntries);
-    // }
-  }, []);
 
   const toggle = () => {
     setModal(!modal);
   };
   const toggleEntryModal = (id: null) => {
-    console.log(state, id);
     if (id == null) {
       entryModal ? setEntryModal(false) : setEntryModal(true);
     } else if (state === false) {
-      console.log(currentId);
       let entryFilterd = entry.filter((x: Entry) => x.id === id);
-      console.log(entryFilterd);
       setEntryName(entryFilterd[0].title);
       setEntryContent(entryFilterd[0].content);
     }
@@ -137,7 +110,6 @@ const DiaryContent = () => {
       });
     }
     const now = dayjs().format();
-    console.log("Update Func=======");
     let obj = {
       title,
       type: scope,
@@ -145,8 +117,12 @@ const DiaryContent = () => {
       updatedAt: now,
       id: diary.id,
     };
-    dispatch(updateDiaryContent(obj));
     toggle();
+    dispatch(updateDiaryContent(obj));
+    Swal.fire({
+      icon: "success",
+      title: "Diary Added.",
+    });
   };
   const updateEntry = () => {
     if (title === "" || entryContent === "") {
@@ -161,9 +137,13 @@ const DiaryContent = () => {
       id: currentId,
     };
     dispatch(upadteEntryReducer(obj));
-    console.log("Edited  Entry==>", obj);
-    // toggleEntryModal();
+    setEntryContent("");
+    setEntryName("");
     setEntryModal(false);
+    Swal.fire({
+      icon: "success",
+      title: "Entry Updated.",
+    });
   };
   const createEntry = async () => {
     if (title === "" || entryContent === "") {
@@ -172,18 +152,19 @@ const DiaryContent = () => {
         text: "Please Fill All The Fields",
       });
     }
-    console.log("Entry Created 11");
     let obj = {
       title: entryName,
       content: entryContent,
       id: id,
     };
-    console.log("Edited  Entry==>", obj);
     await dispatch(addEntryReducer(obj));
+    Swal.fire({
+      icon: "success",
+      title: "Entry Added.",
+    });
     setEntryModal(false);
   };
   const openEditor = (id: any) => {
-    console.log("Entry ID", id);
     if (id === null) {
       setEntryModal(true);
       setState(true);
@@ -191,19 +172,15 @@ const DiaryContent = () => {
       setEntryContent("");
     } else {
       setCurrentId(id);
-      console.log("Open Edit Entry");
       setState(false);
       toggleEntryModal(id);
-      // setdiaryModal(true);
     }
-    // console.log(state);
-    // console.log("diaryModalppppppppppppppppppppppppppppppppppp", diaryModal);
-    // toggle();
-    // setdiaryModal(false);
   };
+  if (!entry) {
+    return <Loader />;
+  }
   return (
     <div className="diaryContentWrapper">
-      {/* <Navbar /> */}
 
       {diary && diary ? (
         <div className="nameWrapper d-flex">
@@ -212,7 +189,7 @@ const DiaryContent = () => {
               <div
                 className="text-white p-5 d-flex"
                 style={{ justifyContent: "space-around" }}
-                onClick={updateDiary}
+                onClick={toggle}
               >
                 <h1 className="myDIV">{diary.title}'s Entries</h1>{" "}
                 <span className="hide p-1">
@@ -237,7 +214,6 @@ const DiaryContent = () => {
       ) : (
         ""
       )}
-      {/* Editable Sectiomn */}
 
       <Modal isOpen={modal} toggle={toggle}>
         <ModalHeader toggle={toggle}>Update Dairy</ModalHeader>
@@ -332,36 +308,55 @@ const DiaryContent = () => {
       <div className="container pb-5">
         <div id="accordion">
           <Accordion allowZeroExpanded>
-            {entry.map((item: any) => (
-              <AccordionItem key={item.id}>
-                <AccordionItemHeading>
-                  <AccordionItemButton>
-                    <span
+            {entry.map((item: any) => {
+              var date = new Date(item.updatedAt);
+              var seconds = date.getTime() / 1000; //1440516958
+              return (
+                <AccordionItem key={item.id}>
+                  <AccordionItemHeading>
+                    <AccordionItemButton>
+                      <span
+                        style={{
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        {item.title}{" "}
+                        {isEditable ? (
+                          <FaPencilAlt
+                            onClick={() => openEditor(item.id)}
+                            className="titleIcon"
+                            style={{ color: "black", float: "right" }}
+                            size={20}
+                          />
+                        ) : (
+                          ""
+                        )}
+                      </span>
+                    </AccordionItemButton>
+                  </AccordionItemHeading>
+                  <AccordionItemPanel
+                    style={{ backgroundColor: "#272B2F", color: "white" }}
+                  >
+                    {item.content}
+                    <div
                       style={{
+                        marginBottom: "0 auto",
+                        display: "flex",
                         justifyContent: "space-between",
+                        marginTop: "10px",
                       }}
                     >
-                      {item.title}{" "}
-                      {isEditable ? (
-                        <FaPencilAlt
-                          onClick={() => openEditor(item.id)}
-                          className="titleIcon"
-                          style={{ color: "black", float: "right" }}
-                          size={20}
-                        />
-                      ) : (
-                        ""
-                      )}
-                    </span>
-                  </AccordionItemButton>
-                </AccordionItemHeading>
-                <AccordionItemPanel
-                  style={{ backgroundColor: "#272B2F", color: "white" }}
-                >
-                  {item.content}
-                </AccordionItemPanel>
-              </AccordionItem>
-            ))}
+                      <div className="text-success  ">
+                        Created At {item.createdAt}
+                      </div>
+                      <div className="text-info">
+                        Udpate At {item.createdAt}
+                      </div>
+                    </div>
+                  </AccordionItemPanel>
+                </AccordionItem>
+              );
+            })}
           </Accordion>
         </div>
       </div>

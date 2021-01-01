@@ -5,6 +5,9 @@ import { useDispatch } from "react-redux";
 import http from "../../services/api";
 import "./diary.css";
 import { addEntryReducer } from "../../reducer/entryReducer";
+import { FaLock } from "react-icons/fa";
+import { MdPublic } from "react-icons/md";
+
 interface diary {
   createdAt: string;
   entryIds: null;
@@ -29,31 +32,13 @@ const Diary = ({ data, editable }: { data: diary; editable: boolean }) => {
       <p className="text-warning">
         Updated At: <span className="text-white">{data.updatedAt}</span>{" "}
       </p>
+      {data.type === "Public" ? (
+        <MdPublic size={20} style={{ color: "white", textAlign: "right" }} />
+      ) : (
+        <FaLock size={20} style={{ color: "white", textAlign: "right" }} />
+      )}
     </div>
   );
 };
 
 export default Diary;
-{
-  /* <Link to="/diary">
-       Diary
-     </Link> */
-}
-{
-  /* <p>Updated At: {data.updatedAt}</p> */
-}
-{
-  /* <p className="text-muted">Created At {data.createdAt}</p> */
-}
-{
-  /* <p className="text-muted">Updated At {data.updatedAt}</p> */
-}
-{
-  /* Diary Type <span className="text-info mx-2">{data.type}</span>
-      <button className="btn btn-success" onClick={() => addEntry(data.id)}>
-        Add Entry
-      </button>
-      <button className="btn btn-success" onClick={() => getEntry(data.id)}>
-        Get Entry
-      </button> */
-}

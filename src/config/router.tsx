@@ -17,16 +17,12 @@ import MyDiaries from "../components/MyDiaries";
 
 export default function MainRouter() {
   const data = useSelector((state: any) => {
-    console.log(state);
     return state.authReducer.isAuthenticated;
   });
   const [isLogin, setIsLogin] = useState(false);
   useEffect(() => {
-    console.log("Navbarr===>", data);
     setIsLogin(data);
-    console.log("navbar 222", isLogin);
   }, [data]);
-  console.log(data);
   return (
     <Router>
       <Route exact path="/">

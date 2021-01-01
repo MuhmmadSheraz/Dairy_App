@@ -18,6 +18,7 @@ export interface EntryType {
   updatedAt: string;
 }
 export interface stateType {
+  diaries: any;
   authReducer: {};
   dairyReducer: {
     diaries: [];

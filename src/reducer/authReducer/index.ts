@@ -1,4 +1,5 @@
 import { createSlice, current, PayloadAction } from "@reduxjs/toolkit";
+import { AuthResponse } from "../../services/mirage/routes/user";
 
 interface AuthState {
   token: string | null;
@@ -12,10 +13,8 @@ export const AuthSlice = createSlice({
   name: "AuthSlice",
   initialState,
   reducers: {
-    saveToken: (state, { payload }: any) => {
+    saveToken: (state, { payload }: { payload: AuthState }) => {
       if (payload) {
-        console.log(payload);
-        console.log("payload===>", payload);
         state.token = payload.token;
         state.isAuthenticated = payload.isAuthenticated;
       }
@@ -23,7 +22,6 @@ export const AuthSlice = createSlice({
     removeUser(state) {
       state.token = null;
       state.isAuthenticated = false;
-      console.log("remove State ", current(state));
     },
   },
 });

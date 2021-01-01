@@ -1,5 +1,11 @@
-import { createAsyncThunk, createSlice, current } from "@reduxjs/toolkit";
+import {
+  createAsyncThunk,
+  createSlice,
+  current,
+  PayloadAction,
+} from "@reduxjs/toolkit";
 import http from "../../services/api";
+import { EntryType } from "../../types/types";
 interface FulfilledAction<ThunkArg, PromiseResult> {
   type: string;
   payload: PromiseResult;
@@ -10,19 +16,15 @@ interface FulfilledAction<ThunkArg, PromiseResult> {
 }
 export const addEntryReducer: any = createAsyncThunk(
   "RandomEntry",
-  async (obj: any) => {
-    console.log("Thunk Called For Entry", obj);
+  async (obj: EntryType) => {
     const response = await http.post(`/diaries/entry/${obj.id}/`, obj);
-    console.log("await response.json()===>", await response);
     return await response;
   }
 );
 export const upadteEntryReducer: any = createAsyncThunk(
   "EditEntry",
-  async (obj: any) => {
-    console.log("Thunk Called For Entry", obj);
+  async (obj: EntryType) => {
     const response = await http.put(`/diaries/entry/${obj.id}/`, obj);
-    console.log("await response.json()===>", await response);
     return await response;
   }
 );
@@ -32,31 +34,36 @@ export const entrySlice = createSlice({
     entries: [],
   },
   reducers: {
-    removeEntries: (state: any): any => {
+    removeEntries: (state: any) => {
       state.entries = [];
-      console.log("remove Entries", state);
     },
-    addAllEntries: (state: any, action: any) => {
-      console.log("ALll Entries ===>", action.payload);
-      state.entries = action.payload;
+    addAllEntries: (state: any, { payload }: PayloadAction | any) => {
+      let data = payload.map((x: any) => {
+        if (!state.entries.includes(x.id)) {
+          return x;
+        }
+      });
+      state.entries = data;
     },
   },
   extraReducers: {
     [addEntryReducer.fulfilled]: (state: any, action: any) => {
       const data: any = action.payload;
-      console.log("data Of entry===>", data);
       const newObj = Object.assign({}, data);
       state.entries = [...state.entries, newObj.entry];
       // }
     },
-    [addEntryReducer.pending]: (state: any, action: any) => {
+    [addEntryReducer.pending]: (state: any, { payload }: PayloadAction) => {
       return console.log("Pending ");
     },
-    [addEntryReducer.reject]: (state: any, action: any) => {
+    [addEntryReducer.reject]: (state: any, { payload }: PayloadAction) => {
       return console.log("Error Found ");
     },
-    [upadteEntryReducer.fulfilled]: (state: any, action: any) => {
-      const data: any = action.payload;
+    [upadteEntryReducer.fulfilled]: (
+      state: any,
+      { payload }: PayloadAction
+    ) => {
+      const data: any = payload;
       const { id } = data;
       const index = state.entries.findIndex((e: any) => e.id === id);
       if (index !== -1) {
@@ -72,5 +79,5 @@ export const entrySlice = createSlice({
     },
   },
 });
-export const { removeEntries,addAllEntries } = entrySlice.actions;
+export const { removeEntries, addAllEntries } = entrySlice.actions;
 export default entrySlice.reducer;

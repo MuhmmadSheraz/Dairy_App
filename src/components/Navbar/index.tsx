@@ -13,7 +13,6 @@ const Navbar = () => {
     return state;
   });
   const logout = () => {
-    console.log("Logging Out Data", data);
     dispatch(removeUser());
     dispatch(removerUserData());
     dispatch(removeEntries());

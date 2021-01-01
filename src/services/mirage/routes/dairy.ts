@@ -18,7 +18,6 @@ export const create = (
     if (!exUser) {
       return handleError(null, "No such user exists.");
     }
-    console.log("Ex User ", exUser);
     const now = dayjs().format();
     const diary = exUser.createDiary({
       title,
@@ -27,7 +26,6 @@ export const create = (
       updatedAt: now,
       userId,
     });
-    console.log("To be dairy ", diary);
     return {
       user: {
         ...exUser.attrs,
@@ -40,7 +38,6 @@ export const create = (
 };
 
 export const getDiaries = (schema: any, req: Request): Diary[] | Response => {
-  console.log(req.params.id);
   try {
     const user = schema.users.find(req.params.id);
     return user.diary as Diary[];
@@ -50,10 +47,8 @@ export const getDiaries = (schema: any, req: Request): Diary[] | Response => {
 };
 export const updateDiary = (schema: any, req: Request): Diary[] | Response => {
   try {
-    console.log("Without JSON", req.requestBody);
     const diary = schema.diaries.find(req.params.id);
     const data = JSON.parse(req.requestBody);
-    console.log("Update diary Content To be==>", data);
     diary.update({
       ...data,
     });

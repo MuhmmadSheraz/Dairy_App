@@ -10,7 +10,6 @@ import MainRouter from "./config/router";
 function App() {
   return (
     <div className="App">
-      {/* <Login /> */}
       <MainRouter />  
     </div>
   );
